@@ -1,5 +1,8 @@
+Write-Host 'Day1'
+
 [System.Int32[]]$data = Get-Content .\01_input.txt
 
+#part1
 $inc = 0
 0..($data.Count - 1) | ForEach-Object {
     if ($data[$_] -gt $data[$_ - 1]) { $inc++ }
@@ -7,7 +10,7 @@ $inc = 0
 
 Write-Host "Part1 : $inc"
 
-
+#part2
 $inc = 0
 0..($data.Count - 3) | ForEach-Object {
     $next = $data[$_ + 1] + $data[$_ + 2] + $data[$_ + 3]
