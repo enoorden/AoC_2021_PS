@@ -1,17 +1,17 @@
 Write-Host 'Day2'
 
-$data = Get-Content .\02_input.txt
+[string[]]$data = Get-Content .\02_input.txt
 
 #part1
 $pos = 0
 $depth = 0
 
 foreach ($d in $data) {
-    $action,$i = $d.split().trim()
+    $action, $amnt = $d.split().trim()
     switch ($action) {
-        'forward' { $pos += $i }
-        'up' { $depth -= $i }
-        'down' { $depth += $i }
+        'forward' { $pos += $amnt }
+        'up' { $depth -= $amnt }
+        'down' { $depth += $amnt }
     }
 }
 
@@ -23,11 +23,11 @@ $depth = 0
 $aim = 0
 
 foreach ($d in $data) {
-    $action,$i = $d.split().trim()
+    $action,$amnt = $d.split().trim()
     switch ($action) {
-        'forward' { $pos += $i; $depth += $aim * $i }
-        'up' { $aim -= $i }
-        'down' { $aim += $i }
+        'forward' { $pos += $amnt; $depth += $aim * $amnt }
+        'up' { $aim -= $amnt }
+        'down' { $aim += $amnt }
     }
 }
 

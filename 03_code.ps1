@@ -1,6 +1,6 @@
 Write-Host 'Day3'
 
-$data = Get-Content .\03_input.txt
+[string[]]$data = Get-Content .\03_input.txt
 
 #Part1
 $nrbits = $data[0].length
