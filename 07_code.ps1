@@ -1,9 +1,13 @@
-Write-Host 'Day7'
+$stopwatch = [System.Diagnostics.Stopwatch]::new()
+$Stopwatch.Start()
+
+Write-Host 'Day7 PS'
 
 [System.Int32[]]$data = (Get-Content .\07_input.txt) -split ','
 
 #Part1
-$results = @{}
+$lowest = [int]::MaxValue
+
 1..$data.Count | ForEach-Object {
     $align = $_
     $fuel = 0
@@ -12,14 +16,15 @@ $results = @{}
         $fuel += [math]::Abs($align - $data[$_])
     }
 
-    $results.$align = $fuel
+    if ($fuel -lt $lowest) { $lowest = $fuel }
 }
 
-Write-Host 'Part1:'
-$results.GetEnumerator() | Sort-Object Value | Select-Object -First 1
+Write-Host "Part1 : $lowest"
+#$results.GetEnumerator() | Sort-Object Value | Select-Object -First 1
 
 #Part2
-$results = @{}
+$lowest = [int]::MaxValue
+
 1..$data.Count | ForEach-Object {
     $align = $_
     $fuel = 0
@@ -29,8 +34,10 @@ $results = @{}
         $fuel += $steps * (($steps / 2) + 0.5)
     }
 
-    $results.$align = $fuel
+    if ($fuel -lt $lowest) { $lowest = $fuel }
 }
 
-Write-Host 'Part2:'
-$results.GetEnumerator() | Sort-Object Value | Select-Object -First 1
+Write-Host "Part2 : $lowest"
+
+$stopwatch.Stop()
+Write-Host "Time Elapsed: $($Stopwatch.Elapsed.ToString())"
