@@ -1,30 +1,30 @@
-Write-Host 'Day4'
+$stopwatch = [System.Diagnostics.Stopwatch]::new()
+$Stopwatch.Start()
 
-#[string[]]$data = Get-Content .\04_sample.txt
+Write-Host 'Day4 - Regex'
+
 [string[]]$data = Get-Content .\04_input.txt
 
-[int[]]$nrs = $data[0].split(',').trim()
+[string[]]$nrs = $data[0].split(',').trim() -replace '^(\d{1})$', '0$1'
 
-function checkBingo($card, $nr) {
-    $card.replace($nr, '_')
+[string[]]$cards = for ($i = 2; $i -lt $data.Count; $i += 6) {
+    $data[$i..($i + 4)] -join ' ' -replace '\ (\d{1})(?:\ |$)', '0$1 '
 }
 
-$cards = @{}
-$c = 0
-for ($i = 1; $i -le $data.Length; $i++) {
-    if ([string]::isNullOrEmpty($data[$i])) { $cards.$c += '|'; $c++; $cards.$c = ''; continue }
-    $cards.$c += '|' + $data[$i].trim() -split '\s+' -join '|'
-}
-$cards.Remove(0)
-$cards.Remove(101)
+$bingoRegex = '(^.{0}|^.{15}|^.{30}|^.{45}|^.{60})(?:__\ |__$){5}|(?:__\ .{1,2}\ .{1,2}\ .{1,2}\ .{1,2}\ ){4}__'
 
-
-
-0..50 | ForEach-Object {
-    $i = $_
-    1..100 | ForEach-Object {
-        $cards.$_ = $cards.$_.replace("|$($nrs[$i])|", '|_|')
+$bingos= @()
+foreach ($nr in $nrs) {
+    #write-host $nr -fo green
+    $cards = $cards -replace $nr, '__'
+    $bingos += $cards -match $bingoRegex | ForEach-Object {
+        ([int[]]($_ | Select-String -Pattern '(\d+)' -All | ForEach-Object { $_.matches }).value | Measure-Object -Sum).Sum * [int]$nr
     }
+    $cards = $cards -notmatch $bingoRegex
 }
 
-$cards
+$bingos | Select -First 1
+$bingos | Select -Last 1
+
+$stopwatch.Stop()
+Write-Host "Time Elapsed: $($Stopwatch.Elapsed.ToString())"
