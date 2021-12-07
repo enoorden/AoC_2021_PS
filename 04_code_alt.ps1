@@ -1,3 +1,5 @@
+#faster version using regex matching
+
 $stopwatch = [System.Diagnostics.Stopwatch]::new()
 $Stopwatch.Start()
 
@@ -15,7 +17,6 @@ $bingoRegex = '(^.{0}|^.{15}|^.{30}|^.{45}|^.{60})(?:__\ |__$){5}|(?:__\ .{1,2}\
 
 $bingos= @()
 foreach ($nr in $nrs) {
-    #write-host $nr -fo green
     $cards = $cards -replace $nr, '__'
     $bingos += $cards -match $bingoRegex | ForEach-Object {
         ([int[]]($_ | Select-String -Pattern '(\d+)' -All | ForEach-Object { $_.matches }).value | Measure-Object -Sum).Sum * [int]$nr
