@@ -1,8 +1,8 @@
 $stopwatch = [System.Diagnostics.Stopwatch]::new()
 $Stopwatch.Start()
 
-function decode($in, $out) {
-    $inGrp = $in -split '\s+' | Group-Object { $_.length } -AsHashTable
+function decode($data) {
+    $inGrp = ($data -split '\|')[0] -split '\s+' | Group-Object { $_.length } -AsHashTable
 
     $digits = @{
         1 = [string]$ingrp.2
@@ -24,22 +24,19 @@ function decode($in, $out) {
     $display = @{}
     $digits.GetEnumerator() | ForEach-Object { $display.(([char[]]$_.Value | Sort-Object) -join '') = $_.key }
 
-    return [int](($out.split() | ForEach-Object { $display[([char[]]$_ | Sort-Object) -join ''] }) -join '')
+    return [int]((($data -split '\|')[1].split() | ForEach-Object { $display[([char[]]$_ | Sort-Object) -join ''] }) -join '')
 }
-
 
 Write-Host 'Day8 PS'
 
-[System.String[]]$data = (Get-Content .\08_input.txt) -split ','
-$in = $data | ForEach-Object { (($_ -split '\|')[0]).trim() }
-$out = $data | ForEach-Object { (($_ -split '\|')[1]).trim() }
+[System.String[]]$data = (Get-Content .\08_input.txt)
 
 #part1
 $regex1478 = '(?:^|\ )(\w{2,4}|\w{7})(?=$|\ )'
-Write-Host 'Part1 :' ($out | Select-String -Pattern $regex1478 -AllMatches | ForEach-Object { $_.Matches }).count
+Write-Host 'Part1 :' ($data | ForEach-Object { (($_ -split '\|')[1]) } | Select-String -Pattern $regex1478 -AllMatches | ForEach-Object { $_.Matches }).count
 
 #part2
-Write-Host 'Part2 :' (0..($data.Length - 1) | ForEach-Object { decode $in[$_] $out[$_] } | Measure-Object -Sum).Sum
+Write-Host 'Part2 :' ($data | ForEach-Object { decode $_ } | Measure-Object -Sum).Sum
 
 $stopwatch.Stop()
 Write-Host "Time Elapsed: $($Stopwatch.Elapsed.ToString())"
