@@ -53,10 +53,12 @@ $lows = for ($y = 0; $y -lt $horData.Length; $y++) {
     }
 }
 
+#mark lowest points
 for ($i = 0; $i -lt $lows.Count; $i++) {
     $orgData[$lows[$i][0]][$lows[$i][1]] = "B$i"
 }
 
+#flow
 do {
     for ($y = 0; $y -lt $orgData.Length; $y++) {
         for ($x = 0; $x -lt ($orgData[0].Length); $x++) {
@@ -64,22 +66,14 @@ do {
             if ($orgData[$y][$x] -like 'B*') { continue }
 
             if ($y -gt 0) { if ($orgData[$y - 1][$x] -like 'B*') { $orgData[$y][$x] = $orgData[$y - 1][$x] } }
-            if ($y -lt $orgData.Length) { if ($orgData[$y + 1][$x] -like 'B*') { $orgData[$y][$x] = $orgData[$y + 1][$x] } }
+            if ($y -lt $orgData.Length -1) { if ($orgData[$y + 1][$x] -like 'B*') { $orgData[$y][$x] = $orgData[$y + 1][$x] } }
             if ($x -gt 0) { if ($orgData[$y][$x - 1] -like 'B*') { $orgData[$y][$x] = $orgData[$y][$x - 1] } }
             if ($x -lt $orgData[0].Length) { if ($orgData[$y][$x + 1] -like 'B*') { $orgData[$y][$x] = $orgData[$y][$x + 1] } }
         }
     }
-} while ($orgdata | % { $_ | ? {$_ -notlike 'B*' -and $_ -ne 9}})
+} while ($orgdata | ForEach-Object { $_ | Where-Object { $_ -notlike 'B*' -and $_ -ne 9 } })
 
-$basins = @{}
-for ($i = 0; $i -lt $lows.Count; $i++) {
-    Write-Host $i -fo green
-    $basins.$i = ($orgData | ForEach-Object { $_ | Where-Object { $_ -eq "B$i" } }).count
-}
-$basins
-
-$total = 1
-($basins.GetEnumerator() | sort value -Descending | select -first 3).Value
+(($orgData | ForEach-Object { $_ | Where-Object { $_ -ne 9 } }) | Group-Object | Sort-Object count -Descending -Top 3)
 
 
 $stopwatch.Stop()
