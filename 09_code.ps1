@@ -23,7 +23,6 @@ function checkHeightsVertical ($inArr) {
     1..2 | ForEach-Object {
         [array]::Reverse($inArr)
         for ($x = 0; $x -lt ($inArr[0].Length); $x++) {
-
             for ($y = 0; $y -lt ($inArr.Length - 1); $y++) {
                 if ($inArr[$y][$x] -eq 9) { continue }
                 if ($inArr[$y][$x] -gt $inArr[$y + 1][$x]) { $inArr[$y][$x] = 9 }
