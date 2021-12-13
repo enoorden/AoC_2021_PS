@@ -1,7 +1,7 @@
 $stopwatch = [System.Diagnostics.Stopwatch]::new()
 $Stopwatch.Start()
 
-Write-Host 'Day10'
+Write-Host 'Day11'
 
 if ($data) { Remove-Variable data }
 $data = (Get-Content .\11_input.txt) | ForEach-Object { , [int[]]@($_ -split '' | Where-Object { $_ }) }
