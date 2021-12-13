@@ -11,22 +11,13 @@ $folds = $data | ForEach-Object { $_ | Select-String '^fold.*((y|x)=\d*)$' } | F
 
 $stars = @()
 foreach ($fold in $folds) {
-    switch ($fold[0]) {
-        'x' {
-            for ($s = 0; $s -lt $paper.Count; $s++) {
-                if ($paper[$s][0] -gt [int]$fold[1]) { $paper[$s][0] = [int]$fold[1] - ($paper[$s][0] - [int]$fold[1]) }
-            }
-        }
-
-        'y' {
-            for ($s = 0; $s -lt $paper.Count; $s++) {
-                if ($paper[$s][1] -gt [int]$fold[1]) { $paper[$s][1] = [int]$fold[1] - ($paper[$s][1] - [int]$fold[1]) }
-            }
-        }
+    $axe = $fold[0] -eq 'x' ? 0 : 1
+    $line = [int]$fold[1]
+    for ($s = 0; $s -lt $paper.Count; $s++) {
+        if ($paper[$s][$axe] -gt $line ) { $paper[$s][$axe] = $line - ($paper[$s][$axe] - $line ) }
     }
     $stars += ($paper | ForEach-Object { $_ -join ',' } | Group-Object | Measure-Object).Count
 }
-
 Write-Host 'Part1:' $stars[0]
 
 Write-Host "`npart2:"
