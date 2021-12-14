@@ -2,11 +2,14 @@ $stopwatch = [System.Diagnostics.Stopwatch]::new()
 $Stopwatch.Start()
 
 Write-Host 'Day12'
+$results = [System.Collections.Generic.HashSet[string]]::new()
+function findPath($map, $start = 'start', $visited = @(), $path, $doubleVisit) {
+    if ($start -eq 'end') {
+        $null = $results.Add($path)
+        return
+    }
 
-function findPath($map, $start, $visited, $path, $doubleVisit) {
-    if ($start -eq 'end') { return $path }
-
-    $path += "$start - "
+    $path += $start
     if ($start -cmatch '[a-z]' -and $start -notin $visited) {
         if ($doubleVisit -and $start -eq $doubleVisit) {
             $doubleVisit = $null #skip the double visit once
@@ -18,6 +21,8 @@ function findPath($map, $start, $visited, $path, $doubleVisit) {
     foreach ($dir in ($map.$start | Where-Object { $_ -notin $visited })) {
         findPath $map $dir $visited $path $doubleVisit
     }
+
+    return
 }
 
 if ($data) { Remove-Variable data }
@@ -32,19 +37,19 @@ foreach ($d in $data) {
 }
 
 #Part1
-$paths = findPath $map 'start' $visited
-Write-Host 'Part8 1:' $paths.count
+findPath $map 'start'
+Write-Host 'Part 1:' $results.count
 Write-Host "Time Elapsed: $($Stopwatch.Elapsed.ToString())"
 
 #Part2
 $smallCaves = $data.split('-') | Where-Object { $_ -cmatch '^(?:(?!start|end))[a-z].*' } | Select-Object -Unique
 
-$paths = @()
+$results.Clear()
 foreach ($c in $smallCaves) {
-    $paths += findPath $map 'start' $visited $path $c
+    findPath $map 'start' -doubleVisit $c
 }
 
-Write-Host 'Part 2:' ($paths | Group-Object | Measure-Object).count
+Write-Host 'Part 2:' $results.count
 
 $stopwatch.Stop()
 Write-Host "Time Elapsed: $($Stopwatch.Elapsed.ToString())"
