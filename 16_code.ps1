@@ -90,17 +90,17 @@ Write-Host "Time Elapsed: $($Stopwatch.Elapsed.ToString())"
 function Calculate ($p, $lvl, $parent) {
     foreach ($sub in $p.sub) { k $sub ($lvl + 1) $p }
     switch ($p.type) {
-        '0' { $p.value = ($p.sub.value | Measure-Object -Sum).Sum }
-        '1' {
+        0 { $p.value = ($p.sub.value | Measure-Object -Sum).Sum }
+        1 {
             $v = 1
             $p.sub.value | ForEach-Object { $v *= $_ }
             $p.value = $v
         }
-        '2' { $p.value = ($p.sub.value | Measure-Object -Min).Minimum }
-        '3' { $p.value = ($p.sub.value | Measure-Object -Max).Maximum }
-        '5' { $p.value = $p.sub[0].value -gt $p.sub[1].value ? 1 : 0 }
-        '6' { $p.value = $p.sub[0].value -lt $p.sub[1].value ? 1 : 0 }
-        '7' { $p.value = $p.sub[0].value -eq $p.sub[1].value ? 1 : 0 }
+        2 { $p.value = ($p.sub.value | Measure-Object -Min).Minimum }
+        3 { $p.value = ($p.sub.value | Measure-Object -Max).Maximum }
+        5 { $p.value = $p.sub[0].value -gt $p.sub[1].value ? 1 : 0 }
+        6 { $p.value = $p.sub[0].value -lt $p.sub[1].value ? 1 : 0 }
+        7 { $p.value = $p.sub[0].value -eq $p.sub[1].value ? 1 : 0 }
     }
 }
 
