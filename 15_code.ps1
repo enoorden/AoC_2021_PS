@@ -9,31 +9,33 @@ $data = (Get-Content .\15_input.txt) | ForEach-Object { , [int[]]@($_ -split '' 
 $xx = $data[0].Length
 $yy = $data.Length
 
-$s = foreach ($i in 1..$yy) { , (, 0 * $xx) }
+$s = foreach ($i in 1..$yy) { , (, 99999 * $xx) }
 
-for ($y = 1; $y -lt $yy; $y++) {
-    $s[$y][0] = $s[$y - 1][0] + $data[$y][0]
+function get-neighbours($x, $y, $vx, $vy) {
+    $n = @()
+    if ($x -gt 0) { $n += , @(($x - 1), $y) }
+    if ($x -lt ($xx - 1)) { $n += , @(($x + 1), $y) }
+    if ($y -gt 0) { $n += , @($x, ($y - 1)) }
+    if ($y -lt ($yy - 1)) { $n += , @($x, ($y + 1)) }
+    $n
 }
 
-for ($x = 1; $x -lt $yy; $x++) {
-    $s[0][$x] = $s[0][$x - 1] + $data[0][$x]
-}
+$s[0][0] = 0
 
-
-for ($y = 1; $y -lt $yy; $y++) {
-    for ($x = 1; $x -lt $xx; $x++) {
-        $s[$y][$x] = [math]::Min( $data[$y][$x] + $s[$y - 1][$x], $data[$y][$x] + $s[$y][$x - 1] )
-
+for ($y = 0; $y -lt $yy; $y++) {
+    for ($x = 0; $x -lt $xx; $x++) {
+        foreach ($n in get-neighbours $x $y) {
+            $cost = $data[$n[1]][$n[0]] + $s[$y][$x]
+            if ($s[$n[1]][$n[0]] -gt $cost) { $s[$n[1]][$n[0]] = $cost }
+        }
     }
 }
 
-write-host "part1:"$s[-1][-1]
+Write-Host 'part1:'$s[-1][-1]
 Write-Host "Time Elapsed: $($Stopwatch.Elapsed.ToString())"
 
-#$data
-#$data | ForEach-Object { $_ -join '' }
-
 #region multiply field
+$data = (Get-Content .\15_input.txt) | ForEach-Object { , [int[]]@($_ -split '' | Where-Object { $_ }) }
 $d = foreach ($i in 1..$yy * 5) { , (, 0 * $xx * 5) }
 
 for ($y = 0; $y -lt $d[0].count; $y++) {
@@ -49,25 +51,25 @@ for ($y = 0; $y -lt $d[0].count; $y++) {
         $d[$y][$x] = $n % 10 + [math]::floor($n / 10)
     }
 }
+
 #endregion
+
 
 $xx = $d[0].Length
 $yy = $d.Length
 
-$s = foreach ($i in 1..$yy) { , (, 0 * $xx) }
+$s = foreach ($i in 1..$yy) { , (, 9999 * $xx) }
+$s[0][0] = 0
 
-for ($y = 1; $y -lt $yy; $y++) {
-    $s[$y][0] = $s[$y - 1][0] + $d[$y][0]
-}
-
-for ($x = 1; $x -lt $yy; $x++) {
-    $s[0][$x] = $s[0][$x - 1] + $d[0][$x]
-}
-
-for ($y = 1; $y -lt $yy; $y++) {
-    for ($x = 1; $x -lt $xx; $x++) {
-        $s[$y][$x] = [math]::Min( $d[$y][$x] + $s[$y - 1][$x], $d[$y][$x] + $s[$y][$x - 1] )
+1..3 | ForEach-Object {
+    for ($y = 0; $y -lt $yy; $y++) {
+        for ($x = 0; $x -lt $xx; $x++) {
+            foreach ($n in get-neighbours $x $y) {
+                $cost = $d[$n[1]][$n[0]] + $s[$y][$x]
+                if ($cost -lt $s[$n[1]][$n[0]]) { $s[$n[1]][$n[0]] = $cost }
+            }
+        }
     }
 }
-write-host "part2:"$s[-1][-1]
+Write-Host 'part2:'$s[-1][-1]
 Write-Host "Time Elapsed: $($Stopwatch.Elapsed.ToString())"
