@@ -1,16 +1,17 @@
-$stopwatch = [System.Diagnostics.Stopwatch]::new()
-$Stopwatch.Start()
+filter Cubes {
+    $cmd, $new = $_.split(' ')
+    @{ cmd = $cmd; cube = ($new | Select-String '-?\d+' -AllMatches).Matches.Value }
+}
+$cubes = Get-Content .\22_input.txt | Cubes
 
-Write-Host 'Day22'
+foreach ($cube in $cubes) {
 
-if ($data) { Remove-Variable data }
-$data = (Get-Content .\22_input.txt)
+}
 
-$r = [Regex]::new('(-?\d*)\.\.(-?\d*)')
-filter dubes { [int[]]$r.Matches($_).groups.value[1, 2, 4, 5, 7, 8] }
-$cubes = $data | dubes
 
-$cubes.ForEach({$_ -join ','})
+$cubes = (Get-Content .\22_input.txt).foreach({ ($_ | Select-String '-?\d+' -AllMatches).Matches.Value })
+
+$cubes.count
 
 
 
